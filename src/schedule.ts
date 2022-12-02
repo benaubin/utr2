@@ -13,6 +13,12 @@ function encodeQuery(query: Record<string, string>): string {
   );
 }
 
+export const levels = [
+  { value: "L", label: "Lower" },
+  { value: "U", label: "Upper" },
+  { value: "G", label: "Graduate" },
+] as const;
+
 export function rmpLink(i: Instructor) {
   return `https://www.ratemyprofessors.com/search/teachers?query=${encodeURIComponent(
     `${namecase(i.first_name.split(" ")[0])} ${namecase(i.last_name)}`
@@ -88,7 +94,7 @@ export interface CourseListing {
 
 export type CourseSearch = {
   field: string;
-  level: string;
+  level: typeof levels[number]["value"];
 };
 
 function parseListings(table: HTMLTableElement) {
@@ -158,27 +164,64 @@ function parseListings(table: HTMLTableElement) {
   return courses;
 }
 
-export const coursesQuery = selectorFamily({
+const queryForCourses = async (
+  { field, level }: CourseSearch,
+  nextUnique: string
+): Promise<QRes> => {
+  if (!field) return { listings: [], nextUnique: null };
+  const res = await fetch(
+    scheduleRoot +
+      "/results/" +
+      encodeQuery({
+        ccyys,
+        search_type_main: "FIELD",
+        fos_fl: field,
+        level,
+        next_unique: nextUnique || "0",
+      })
+  );
+  const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+  const listings = parseListings(doc.querySelector(".results"));
+  const nextLink = doc.getElementById("next_nav_link") as HTMLAnchorElement;
+  nextUnique = nextLink
+    ? nextLink.href.slice(nextLink.href.lastIndexOf("=") + 1)
+    : null;
+  return { listings, nextUnique };
+};
+
+type QRes = { listings: CourseListing[]; nextUnique: string | null };
+
+export const coursesQuery = selectorFamily<
+  QRes,
+  { q: CourseSearch; page: number }
+>({
   key: "courses",
   get:
-    ({ field, level }: CourseSearch) =>
-    async () => {
-      if (!field) return [];
-      const res = await fetch(
-        scheduleRoot +
-          "/results/" +
-          encodeQuery({
-            ccyys,
-            search_type_main: "FIELD",
-            fos_fl: field,
-            level,
-          })
+    ({ q, page }) =>
+    async ({ get }) => {
+      if (page == 0) return { listings: [], nextUnique: null };
+      const prev = get(coursesQuery({ q, page: page - 1 })) as QRes;
+      console.log({ page, prev });
+      const { listings: cur, nextUnique } = await queryForCourses(
+        {
+          ...q,
+        },
+        prev.nextUnique
       );
-      const doc = new DOMParser().parseFromString(
-        await res.text(),
-        "text/html"
-      );
-      return parseListings(doc.querySelector(".results"));
+      if (
+        prev.listings.length > 0 &&
+        cur.length > 0 &&
+        prev.listings[prev.listings.length - 1].title == cur[0].title
+      ) {
+        cur[0].uniques.unshift(
+          ...prev.listings[prev.listings.length - 1].uniques
+        );
+        cur.unshift(...prev.listings.slice(0, prev.listings.length - 1));
+      } else if (prev.listings.length > 0) {
+        cur.unshift(...prev.listings);
+      }
+      console.log(cur);
+      return { listings: cur, nextUnique };
     },
 });
 

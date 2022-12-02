@@ -8,6 +8,7 @@ import {
   coursesQuery,
   ecisLink,
   fieldsQuery,
+  levels,
   rmpLink,
   scheduleRoot,
 } from "./schedule";
@@ -27,15 +28,13 @@ function strTime(time: number, withM = true): string {
   );
 }
 
-const levels = [
-  { value: "L", label: "Lower" },
-  { value: "U", label: "Upper" },
-  { value: "G", label: "Graduate" },
-];
-
 function CourseSearchListings({ q }: { q: CourseSearch }) {
+  const [page_, setPage] = useState([1, q] as [number, CourseSearch]);
+  const page = useDeferredValue(page_[1] == q ? page_[0] : 1);
   const c = useDeferredValue(q);
-  const courses = useRecoilValue(coursesQuery(c));
+  const { listings: courses, nextUnique } = useRecoilValue(
+    coursesQuery({ q: c, page })
+  );
 
   const [wishlist, setWishlist] = useRecoilState(wishlistState);
   const wishlistSet = useRecoilValue(wishlistSetSelector);
@@ -134,13 +133,21 @@ function CourseSearchListings({ q }: { q: CourseSearch }) {
           </div>
         );
       })}
+
+      {nextUnique && (
+        <button
+          onClick={() => setPage([page + 1, q])}
+          style={{ marginBottom: "20px" }}>
+          Load more
+        </button>
+      )}
     </div>
   );
 }
 
 export function CourseSelect() {
   const fields = useRecoilValue(fieldsQuery);
-  const [level, setLevel] = useState("L");
+  const [level, setLevel] = useState(levels[0]);
   const [field, setField] = useState(null);
 
   return (
@@ -154,12 +161,16 @@ export function CourseSelect() {
         }))}
       />
       <Select
-        defaultValue={levels.find(({ value }) => value == level)}
-        onChange={({ value }) => setLevel(value)}
-        options={levels}
+        defaultValue={level}
+        onChange={(level) => setLevel(level)}
+        options={levels as any}
       />
       <Suspense>
-        <CourseSearchListings q={{ level, field }}></CourseSearchListings>
+        <CourseSearchListings
+          q={{
+            level: level.value,
+            field,
+          }}></CourseSearchListings>
       </Suspense>
     </div>
   );
