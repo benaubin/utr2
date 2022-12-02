@@ -62,24 +62,24 @@ export function Calendar() {
                       bottom: bottom + "%",
                       background: "#0074D9",
                       color: "white",
-                      borderRadius: "4px",
+                      borderBottom: "6px solid white",
                       padding: "2px",
                       width: "100%",
                       boxSizing: "border-box",
-                      fontSize: "14px",
+                      fontSize: "12px",
                     }}>
                     <div
                       style={{
                         fontWeight: "600",
                       }}>
-                      {strTime(meeting.startTime, false)} -{" "}
-                      {strTime(meeting.endTime)}
-                    </div>
-                    <div>
                       {courseShortName(unique.course)}
                       {unique.instructors[0]
                         ? " with " + namecase(unique.instructors[0]?.last_name)
                         : ""}
+                    </div>
+                    <div>
+                      {strTime(meeting.startTime, false)} -{" "}
+                      {strTime(meeting.endTime)}
                     </div>
                     <div>{meeting.location}</div>
                   </div>

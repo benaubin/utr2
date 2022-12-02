@@ -12,9 +12,24 @@ import {
   rmpLink,
   scheduleRoot,
   strTime,
+  UniqueListing,
 } from "./schedule";
 import * as styles from "./CourseSelect.module.css";
 import namecase from "namecase";
+
+export function groupByInstructor<T extends UniqueListing>(
+  uniques: T[]
+): Map<string, T[]> {
+  const map = new Map<string, T[]>();
+  uniques.forEach((unique, i) => {
+    const instructors = unique.instructors
+      .map((i) => i.last_name + ", " + i.first_name)
+      .join("; ");
+    if (!map.has(instructors)) map.set(instructors, []);
+    map.get(instructors).push(unique);
+  });
+  return map;
+}
 
 function CourseSearchListings({ q }: { q: CourseSearch }) {
   const [page_, setPage] = useState([1, q] as [number, CourseSearch]);
@@ -30,26 +45,12 @@ function CourseSearchListings({ q }: { q: CourseSearch }) {
   return (
     <div>
       {courses.map((course) => {
-        const map = new Map<
-          string,
-          { instructors: string; uniques: CourseListing["uniques"] }
-        >();
-        course.uniques.forEach((unique, i) => {
-          const instructors = unique.instructors
-            .map((i) => i.last_name + ", " + i.first_name)
-            .join("; ");
-          if (!map.has(instructors))
-            map.set(instructors, {
-              instructors,
-              uniques: [],
-            });
-          map.get(instructors).uniques.push(unique);
-        });
+        const map = groupByInstructor(course.uniques);
 
         return (
           <div key={course.title} className={styles.course}>
             <h2>{course.title}</h2>
-            {Array.from(map.values()).map(({ uniques, instructors }) => {
+            {Array.from(map.entries()).map(([instructors, uniques]) => {
               return (
                 <div className={styles.instructorGroup} key={instructors}>
                   <h3 className={styles.instructor}>
