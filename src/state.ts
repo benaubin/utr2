@@ -1,9 +1,18 @@
-import { selector } from "recoil";
+import { atom, selector } from "recoil";
+import { CourseListing, UniqueListing } from "./schedule";
 
-export const subjectsQuery = selector({
-  key: "subjects",
-  get: async ({}) => {
-    const res = await fetch("/api/terms/2023%20Spring/subjects");
-    return await res.json();
+export const wishlistState = atom({
+  key: "wishlist",
+  default: [] as (UniqueListing & { course: string })[],
+});
+
+export const wishlistSetSelector = selector({
+  key: "wishlist-set",
+  get: ({ get }) => {
+    const set = new Set();
+    for (const unique of get(wishlistState)) {
+      set.add(unique.unique);
+    }
+    return set;
   },
 });

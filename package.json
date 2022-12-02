@@ -1,11 +1,16 @@
 {
+  "scripts": {
+    "build": "node transpile.mjs"
+  },
   "devDependencies": {
     "@parcel/config-default": "^2.8.0",
     "@parcel/core": "^2.8.0",
     "@types/react": "^18.0.25",
-    "@types/react-dom": "^18.0.9"
+    "@types/react-dom": "^18.0.9",
+    "typescript-plugin-css-modules": "^3.4.0"
   },
   "dependencies": {
+    "namecase": "^1.1.2",
     "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

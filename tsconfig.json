@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "module": "NodeNext",
+    "noEmit": true,
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
+  }
+}
