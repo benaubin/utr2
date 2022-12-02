@@ -1,6 +1,21 @@
 import { selector, selectorFamily } from "recoil";
 import namecase from "namecase";
 
+export function strTime(time: number, withM = true): string {
+  let hours = Math.floor(time / 60);
+  let m = hours >= 12 ? "p.m." : "a.m.";
+  hours %= 12;
+  if (hours == 0) hours = 12;
+  const minutes = time % 60;
+  return (
+    hours + ":" + minutes.toString().padStart(2, "0") + (withM ? " " + m : "")
+  );
+}
+
+export function courseShortName(longName: string): string {
+  return longName.slice(0, longName.indexOf(" ", 8));
+}
+
 function encodeQuery(query: Record<string, string>): string {
   return (
     "?" +
@@ -57,6 +72,33 @@ export const fieldsQuery = selector({
     return fields;
   },
 });
+
+export enum MeetingDay {
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 4,
+  Thursday = 8,
+  Friday = 16,
+}
+
+export function parseDays(str: string): number {
+  let days = 0;
+  const map = [
+    ["M", MeetingDay.Monday],
+    ["T", MeetingDay.Tuesday],
+    ["W", MeetingDay.Wednesday],
+    ["TH", MeetingDay.Thursday],
+    ["F", MeetingDay.Friday],
+  ] as const;
+  for (const [pre, val] of map) {
+    if (str.startsWith(pre) && (pre != "T" || !str.startsWith("Th"))) {
+      days |= val;
+      str = str.slice(pre.length);
+    }
+  }
+  return days;
+}
+
 export interface MeetingTime {
   location: string;
   days: string;
@@ -126,7 +168,7 @@ function parseListings(table: HTMLTableElement) {
         const [startTime, endTime] = hour.split("-").map((hour) => {
           const [time, m] = hour.split(" ");
           let [hours, minutes] = time.split(":").map(Number);
-          if (m == "p.m.") hours += 12;
+          if (m == "p.m." && hours != 12) hours += 12;
           return hours * 60 + minutes;
         });
 

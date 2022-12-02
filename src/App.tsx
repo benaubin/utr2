@@ -1,9 +1,17 @@
 import { Suspense } from "react";
-import { RecoilRoot } from "recoil";
+import { RecoilRoot, useRecoilState } from "recoil";
 import { CourseSelect } from "./CourseSelect";
 import * as styles from "./App.module.css";
 import WishlistDisplay from "./WishlistDisplay";
 import { Calendar } from "./Calendar";
+import { currentScheduleIdAtom, currentScheduleSelector } from "./state";
+
+function ScheduleSwitcher() {
+  const [currentScheduleId, setCurrentScheduleId] = useRecoilState(
+    currentScheduleIdAtom
+  );
+  return <div>Schedule {currentScheduleId}</div>;
+}
 
 export default function App({}) {
   return (
@@ -17,6 +25,7 @@ export default function App({}) {
         </div>
 
         <div>
+          <ScheduleSwitcher></ScheduleSwitcher>
           <Calendar />
           <Suspense>
             <WishlistDisplay></WishlistDisplay>

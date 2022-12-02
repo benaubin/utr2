@@ -29,6 +29,18 @@
 }
 
 .uniqueSelect {
+  appearance: none;
+
   padding: 0;
   margin: 0 auto;
+}
+
+.uniqueSelect::before {
+  content: "☆";
+  font-size: 16px;
+  color: goldenrod;
+}
+
+.uniqueSelect:checked:before {
+  content: "★";
 }

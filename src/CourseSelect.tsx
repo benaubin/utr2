@@ -11,22 +11,10 @@ import {
   levels,
   rmpLink,
   scheduleRoot,
+  strTime,
 } from "./schedule";
 import * as styles from "./CourseSelect.module.css";
 import namecase from "namecase";
-
-function strTime(time: number, withM = true): string {
-  let hours = Math.floor(time / 60);
-  const minutes = time % 60;
-  let m = "a.m.";
-  if (hours > 12) {
-    hours -= 12;
-    m = "p.m.";
-  }
-  return (
-    hours + ":" + minutes.toString().padStart(2, "0") + (withM ? " " + m : "")
-  );
-}
 
 function CourseSearchListings({ q }: { q: CourseSearch }) {
   const [page_, setPage] = useState([1, q] as [number, CourseSearch]);
