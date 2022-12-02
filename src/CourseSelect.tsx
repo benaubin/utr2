@@ -1,21 +1,14 @@
 import { Suspense, useState, useDeferredValue } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import Select from "react-select";
-import { wishlistSetSelector, wishlistState } from "./state";
 import {
-  CourseListing,
   CourseSearch,
   coursesQuery,
-  ecisLink,
   fieldsQuery,
   levels,
-  rmpLink,
-  scheduleRoot,
-  strTime,
   UniqueListing,
 } from "./schedule";
-import * as styles from "./CourseSelect.module.css";
-import namecase from "namecase";
+import { CourseList } from "./CourseList";
 
 export function groupByInstructor<T extends UniqueListing>(
   uniques: T[]
@@ -39,90 +32,9 @@ function CourseSearchListings({ q }: { q: CourseSearch }) {
     coursesQuery({ q: c, page })
   );
 
-  const [wishlist, setWishlist] = useRecoilState(wishlistState);
-  const wishlistSet = useRecoilValue(wishlistSetSelector);
-
   return (
     <div>
-      {courses.map((course) => {
-        const map = groupByInstructor(course.uniques);
-
-        return (
-          <div key={course.title} className={styles.course}>
-            <h2>{course.title}</h2>
-            {Array.from(map.entries()).map(([instructors, uniques]) => {
-              return (
-                <div className={styles.instructorGroup} key={instructors}>
-                  <h3 className={styles.instructor}>
-                    {uniques[0].instructors.map((i) => {
-                      let full = namecase(`${i.first_name} ${i.last_name}`);
-                      return (
-                        <div key={full}>
-                          {full}{" "}
-                          <a href={rmpLink(i)} target="_blank">
-                            RMP
-                          </a>{" "}
-                          <a href={ecisLink(i)} target="_blank">
-                            eCIS
-                          </a>
-                        </div>
-                      );
-                    })}
-                  </h3>
-                  {uniques.map((unique) => (
-                    <div className={styles.unique} key={unique.unique}>
-                      <div>
-                        <input
-                          type="checkbox"
-                          className={styles.uniqueSelect}
-                          checked={wishlistSet.has(unique.unique)}
-                          onChange={(e) => {
-                            if (
-                              e.target.checked == wishlistSet.has(unique.unique)
-                            )
-                              return;
-                            let w;
-                            if (e.target.checked)
-                              w = [
-                                ...wishlist,
-                                {
-                                  ...unique,
-                                  course: course.title,
-                                },
-                              ];
-                            else
-                              w = wishlist.filter(
-                                (u) => u.unique != unique.unique
-                              );
-                            setWishlist(w);
-                          }}></input>
-                      </div>
-                      <div>
-                        <a href={`${scheduleRoot}/${unique.unique}`}>
-                          {unique.unique}
-                        </a>
-                      </div>
-                      <div>
-                        <div>{unique.instructionMode}</div>
-                        {unique.meetings.map((meeting, i) => (
-                          <div className={styles.meeting} key={i}>
-                            <div>
-                              {meeting.days} {strTime(meeting.startTime, false)}{" "}
-                              - {strTime(meeting.endTime)}
-                            </div>
-                            <div>{meeting.location}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-
+      <CourseList courses={courses}></CourseList>
       {nextUnique && (
         <button
           onClick={() => setPage([page + 1, q])}

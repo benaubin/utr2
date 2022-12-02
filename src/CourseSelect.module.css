@@ -24,7 +24,7 @@
 
 .unique {
   display: grid;
-  grid-template-columns: min-content min-content 1fr;
+  grid-template-columns: max-content min-content 1fr;
   gap: 12px;
 }
 
@@ -33,11 +33,12 @@
 
   padding: 0;
   margin: 0 auto;
+
+  font-size: 16px;
 }
 
 .uniqueSelect::before {
   content: "☆";
-  font-size: 16px;
   color: #daa520;
 }
 

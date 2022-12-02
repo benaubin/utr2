@@ -1,4 +1,4 @@
-import { atom, atomFamily, selector } from "recoil";
+import { atom, atomFamily, DefaultValue, selector } from "recoil";
 import { CourseListing, UniqueListing } from "./schedule";
 
 export type CourseUnique = UniqueListing & { course: string };
@@ -20,12 +20,13 @@ export const wishlistSetSelector = selector({
 });
 
 export type Schedule = {
+  title: string;
   uniques: CourseUnique[];
 };
 
-export const schedulesAtom = atomFamily<Schedule, number>({
+export const schedulesAtom = atom<Schedule[]>({
   key: "schedules",
-  default: { uniques: [] },
+  default: [{ title: "Schedule 1", uniques: [] }],
 });
 
 export const currentScheduleIdAtom = atom<number>({
@@ -35,7 +36,15 @@ export const currentScheduleIdAtom = atom<number>({
 
 export const currentScheduleSelector = selector({
   key: "current-schedule",
-  get: ({ get }) => get(schedulesAtom(get(currentScheduleIdAtom))),
+  get: ({ get }) => get(schedulesAtom)[get(currentScheduleIdAtom)],
   set: ({ get, set }, newVal) =>
-    set(schedulesAtom(get(currentScheduleIdAtom)), newVal),
+    set(schedulesAtom, (schedules) => {
+      let s = [...schedules];
+      let id = get(currentScheduleIdAtom);
+      s[id] =
+        newVal instanceof DefaultValue
+          ? { title: `Schedule ${id}`, uniques: [] }
+          : newVal;
+      return s;
+    }),
 });

@@ -19,9 +19,11 @@ export function Calendar() {
   return (
     <div
       style={{
-        height: "500px",
         display: "grid",
         gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
+      }}
+      onDragEnter={(e) => {
+        console.log(e.target);
       }}>
       {[
         { name: "Mon", val: MeetingDay.Monday },
@@ -42,16 +44,19 @@ export function Calendar() {
 
         return (
           <div key={name}>
-            <h2 style={{ textAlign: "center" }}>{name}</h2>
+            <h2 style={{ textAlign: "center", padding: 0, fontSize: 16 }}>
+              {name}
+            </h2>
             <div
               className="events"
-              style={{ position: "relative", height: "100%" }}>
+              style={{ position: "relative", height: "500px" }}>
               {meetings.map(({ meeting, unique }) => {
                 const top = Math.floor(
                   (Math.max(meeting.startTime - startOfDay, 0) / lenOfDay) * 100
                 );
                 const bottom = Math.floor(
-                  (Math.max(endOfDay - meeting.endTime, 0) / lenOfDay) * 100
+                  (Math.max(endOfDay - (meeting.endTime - 15), 0) / lenOfDay) *
+                    100
                 );
                 return (
                   <div
@@ -62,7 +67,6 @@ export function Calendar() {
                       bottom: bottom + "%",
                       background: "#0074D9",
                       color: "white",
-                      borderBottom: "6px solid white",
                       padding: "2px",
                       width: "100%",
                       boxSizing: "border-box",
@@ -78,10 +82,9 @@ export function Calendar() {
                         : ""}
                     </div>
                     <div>
-                      {strTime(meeting.startTime, false)} -{" "}
+                      {meeting.location} {strTime(meeting.startTime, false)} -{" "}
                       {strTime(meeting.endTime)}
                     </div>
-                    <div>{meeting.location}</div>
                   </div>
                 );
               })}
