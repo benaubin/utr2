@@ -29,6 +29,7 @@ function ScheduleDisplay() {
         {schedules.map((schedule, i) => {
           return (
             <a
+              key={i}
               style={{
                 padding: "12px 12px 6px 12px",
                 marginRight: 12,
