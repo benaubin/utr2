@@ -2,7 +2,10 @@ import { readFileSync, writeFileSync } from "fs";
 
 import { Parcel } from "@parcel/core";
 
-const PUBLIC_URL = "http://localhost:3000";
+const development = false;
+const PUBLIC_URL = development
+  ? "http://localhost:3000"
+  : "https://www.cs.utexas.edu/~bean/utr2";
 
 let bundler = new Parcel({
   entries: "src/frame.html",
@@ -15,8 +18,7 @@ let bundler = new Parcel({
     },
   },
 });
-let { bundleGraph, buildTime } = await bundler.run();
-let bundles = bundleGraph.getBundles();
+let { buildTime } = await bundler.run();
 console.log(`✨ Built source in ${buildTime}ms!`);
 
 const loaderTemplateSrc = readFileSync("loader.template.js", {
