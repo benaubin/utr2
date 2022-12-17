@@ -1,16 +1,7 @@
-import { useMemo } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { groupByInstructor } from "./CourseSelect";
-import {
-  CourseListing,
-  ecisLink,
-  rmpLink,
-  strTime,
-  uniqueQuery,
-} from "./schedule";
-import { CourseUnique, currentScheduleSelector, wishlistState } from "./state";
-import namecase from "namecase";
+import { useRecoilState } from "recoil";
 import { CourseList } from "./CourseList";
+import { CourseListing } from "./schedule";
+import { CourseUnique, wishlistState } from "./state";
 
 function rebuildCourses(uniques: CourseUnique[]): CourseListing[] {
   const courses = [];

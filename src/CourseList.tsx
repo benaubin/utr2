@@ -1,9 +1,8 @@
+import namecase from "namecase";
+import { useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  currentScheduleSelector,
-  wishlistSetSelector,
-  wishlistState,
-} from "./state";
+import { groupByInstructor } from "./CourseSelect";
+import * as styles from "./CourseSelect.module.css";
 import {
   CourseListing,
   ecisLink,
@@ -11,10 +10,11 @@ import {
   scheduleRoot,
   strTime,
 } from "./schedule";
-import * as styles from "./CourseSelect.module.css";
-import namecase from "namecase";
-import { groupByInstructor } from "./CourseSelect";
-import { useMemo } from "react";
+import {
+  currentScheduleSelector,
+  wishlistSetSelector,
+  wishlistState,
+} from "./state";
 
 export function CourseList({
   courses,

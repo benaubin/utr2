@@ -1,6 +1,7 @@
-import { Suspense, useState, useDeferredValue } from "react";
-import { useRecoilValue } from "recoil";
+import { Suspense, useDeferredValue, useState } from "react";
 import Select from "react-select";
+import { useRecoilValue } from "recoil";
+import { CourseList } from "./CourseList";
 import {
   CourseSearch,
   coursesQuery,
@@ -8,7 +9,6 @@ import {
   levels,
   UniqueListing,
 } from "./schedule";
-import { CourseList } from "./CourseList";
 
 export function groupByInstructor<T extends UniqueListing>(
   uniques: T[]

@@ -1,23 +1,12 @@
-import {
-  Suspense,
-  useDeferredValue,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
-import { CourseSelect } from "./CourseSelect";
-import * as styles from "./App.module.css";
-import WishlistDisplay from "./WishlistDisplay";
-import { Calendar } from "./Calendar";
-import {
-  currentScheduleIdAtom,
-  currentScheduleSelector,
-  schedulesAtom,
-} from "./state";
-import { courseShortName } from "./schedule";
 import namecase from "namecase";
+import { Suspense, useDeferredValue, useEffect, useRef, useState } from "react";
+import { RecoilRoot, useRecoilState } from "recoil";
+import * as styles from "./App.module.css";
+import { Calendar } from "./Calendar";
+import { CourseSelect } from "./CourseSelect";
+import { courseShortName } from "./schedule";
+import { currentScheduleIdAtom, schedulesAtom } from "./state";
+import WishlistDisplay from "./WishlistDisplay";
 
 function ScheduleDisplay() {
   const [schedules, setSchedules] = useRecoilState(schedulesAtom);
