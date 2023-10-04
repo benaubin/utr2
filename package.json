@@ -7,7 +7,7 @@
     "@parcel/core": "^2.8.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
-    "typescript-plugin-css-modules": "^3.4.0"
+    "typescript-plugin-css-modules": "^5.0.1"
   },
   "dependencies": {
     "namecase": "^1.1.2",
